@@ -1,0 +1,30 @@
+# Build
+build/
+*.apk
+*.exe
+dist/
+*.bat
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+local.properties
+*.hprof
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+screen*.png
