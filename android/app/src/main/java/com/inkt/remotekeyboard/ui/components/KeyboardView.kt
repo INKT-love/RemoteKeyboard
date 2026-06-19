@@ -286,7 +286,7 @@ private fun LandscapeKeyboard(
             .fillMaxWidth()
             .background(Color(0xFF1A1A1A))
             .padding(horizontal = 4.dp, vertical = 1.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Row 1: Esc + Numbers + Backspace
@@ -381,7 +381,7 @@ private fun LandscapeKeyboard(
             Spacer(modifier = Modifier.weight(0.2f))
             KeyButton(label = "◀", modifier = Modifier.weight(0.8f).height(keyHeight),
                  onClick = { viewModel.sendKey("left") })
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(modifier = Modifier.weight(1f).height(keyHeight), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 KeyButton(label = "▲", modifier = Modifier.fillMaxWidth().weight(1f),
                      onClick = { viewModel.sendKey("up") })
                 KeyButton(label = "▼", modifier = Modifier.fillMaxWidth().weight(1f),

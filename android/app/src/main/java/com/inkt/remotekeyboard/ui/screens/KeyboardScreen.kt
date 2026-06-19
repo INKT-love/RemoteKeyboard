@@ -187,9 +187,7 @@ fun KeyboardScreen(
                 FunctionKeyRow(viewModel)
             }
 
-            if (!isLandscape) {
-                QuickActionsBar(viewModel, shortcuts, onVoiceInput = { startSpeechInput() })
-            }
+            QuickActionsBar(viewModel, shortcuts, onVoiceInput = { startSpeechInput() })
 
             KeyboardView(
                 viewModel = viewModel,
