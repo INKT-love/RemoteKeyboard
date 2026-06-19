@@ -1,6 +1,12 @@
 package com.inkt.remotekeyboard.ui.screens
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
@@ -44,6 +50,32 @@ fun KeyboardScreen(
     val isLandscape = configuration.screenWidthDp > configuration.screenHeightDp
     val context = LocalContext.current
 
+    // 语音识别
+    val speechLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val text = matches?.firstOrNull()
+            if (!text.isNullOrEmpty()) {
+                viewModel.sendText(text)
+                Toast.makeText(context, "已输入: $text", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    fun startSpeechInput() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "zh-CN")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "请说话…")
+        }
+        try {
+            speechLauncher.launch(intent)
+        } catch (_: Exception) {
+            Toast.makeText(context, "设备不支持语音识别", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     val isConnected = connectionState is ConnectionState.Connected
     LaunchedEffect(isConnected) {
         val activity = context as? android.app.Activity
@@ -79,6 +111,13 @@ fun KeyboardScreen(
                         }
                     },
                     actions = {
+                        IconButton(onClick = { startSpeechInput() }) {
+                            Icon(
+                                Icons.Default.Mic,
+                                contentDescription = "语音输入",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                         IconButton(onClick = { showFunctionKeys = !showFunctionKeys }) {
                             Icon(
                                 Icons.Default.Functions,
@@ -127,6 +166,9 @@ fun KeyboardScreen(
                         ConnectionChip(connectionState)
                     }
                     Row {
+                        IconButton(onClick = { startSpeechInput() }, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.Mic, "语音", modifier = Modifier.size(18.dp))
+                        }
                         IconButton(onClick = { showFunctionKeys = !showFunctionKeys }, modifier = Modifier.size(32.dp)) {
                             Icon(Icons.Default.Functions, "F键", modifier = Modifier.size(18.dp))
                         }
@@ -145,7 +187,7 @@ fun KeyboardScreen(
                 FunctionKeyRow(viewModel)
             }
 
-            QuickActionsBar(viewModel, shortcuts)
+            QuickActionsBar(viewModel, shortcuts, onVoiceInput = { startSpeechInput() })
 
             KeyboardView(
                 viewModel = viewModel,

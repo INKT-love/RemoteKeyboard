@@ -22,6 +22,7 @@ fun QuickActionsBar(
     viewModel: KeyboardViewModel,
     shortcuts: List<CustomShortcut> = emptyList(),
     modifier: Modifier = Modifier,
+    onVoiceInput: (() -> Unit)? = null,
 ) {
     val displayShortcuts = if (shortcuts.isEmpty()) viewModel.defaultShortcuts else shortcuts
 
@@ -43,6 +44,11 @@ fun QuickActionsBar(
             QuickAction(
                 name = "📋 粘贴",
                 onClick = { viewModel.pasteClipboard() }
+            )
+            // 语音输入按钮（由 KeyboardScreen 通过事件触发，这里提供快捷入口）
+            QuickAction(
+                name = "🎤 语音",
+                onClick = { onVoiceInput?.invoke() }
             )
             displayShortcuts.forEach { shortcut ->
                 QuickAction(
